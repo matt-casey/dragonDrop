@@ -1,1 +1,13 @@
 /* jrg-drop */
+
+.draggable {
+  cursor: pointer;
+}
+.draggable.being-dragged{
+  position: absolute;
+  z-index: 10;
+  font-weight: bold;
+}
+.draggable.return-animation {
+  -webkit-transition: ease-out .35s all;
+}

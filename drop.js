@@ -30,7 +30,7 @@ var isAndroid = /Android/i.test(navigator.userAgent);
 var hasTouchEvents = /webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) || isAndroid; //SHOULD BE BASED ON WHETHER TOUCHEVENTS EXIST
 
 /********************************************
- * ANIMATIONS
+ * ANIMATIONS and DIMENSIONS
  ********************************************/
 
 var requestAnimFrame = (function(){
@@ -44,13 +44,37 @@ var requestAnimFrame = (function(){
           };
 	})();
 
-var translateElement = function (element, position) {
-	element.css("-webkit-transform", "translate3d(" + position.x + "px, " + position.y + "px, 0px)");
-}
+var translateElement = function (jqElement, position) {
+	jqElement.css("-webkit-transform", "translate3d(" + position.x + "px, " + position.y + "px, 0px)");
+};
 
-var removeTranslation = function (element) {
-	element.css("-webkit-transform", "translate3d( 0, 0, 0)");
-}
+var removeTranslation = function (jqElement) {
+	jqElement.css("-webkit-transform", "translate3d( 0, 0, 0)");
+};
+
+var hasClass = function (jqElement, className) {
+	jqElement[0].classList.contains(className);
+};
+
+var addClass = function (jqElement, className) {
+	jqElement[0].classList.add(className);
+};
+
+var removeClass = function (jqElement, className) {
+	jqElement[0].classList.remove(className);
+};
+
+var getElementDimensions = function (element) {
+	var jqElement = $(element);
+	var offset    = jqElement.offset();
+	return {
+		element: element,
+		left:    offset.left,
+    right:   offset.left + jqElement.width(),
+    top:     offset.top,
+    bottom:  offset.top  + jqElement.height()
+	}
+};
 
 /********************************************
  * EVENTS
@@ -71,22 +95,22 @@ var getEventCoordinates = function (event) {
 		x: (isAndroid ? event.changedTouches[0].pageX : event.pageX),
 		y: (isAndroid ? event.changedTouches[0].pageY : event.pageY)
 	}
-}
+};
 
 var diffPositions = function (a, b) {
 	return {
 		x: (a.x - b.x),
 		y: (a.y - b.y)
 	}
-}
+};
 
-var addEventListener = function (event, onEvent) {
-	document.addEventListener( event, onEvent, false);
-}
+var addEventListener = function (watchedElement, event, onEvent) {
+	watchedElement.addEventListener(event, onEvent, false);
+};
 
-var removeEventListener = function (event, onEvent) {
-	document.removeEventListener( event, onEvent, false);
-}
+var removeEventListener = function (watchedElement, event, onEvent) {
+	watchedElement.removeEventListener(event, onEvent, false);
+};
 
 /********************************************
  * DIRECTIVES
@@ -97,24 +121,47 @@ angular.module('matt-casey.dragon-drop', [])
 	return {
 		restrict: 'A',
 		scope: {
+			targets: '='
 		},
 		link: function(scope, element, attrs) {
 			var initialEventPosition = emptyCoordinates;
 			var elementPosition      = emptyCoordinates;
 			var isCurrentlyMoving;
 			var events;
+			var dropTargets;
 
 			var setupDirective = function () {
+				setupElementStyling();
 				events = getEvents();
-				addEventListener(events.start, startEventHandler);
+				dropTargets = getDropTargets();
+				addEventListener(element[0], events.start, startEventHandler);
 			}
+
+			var setupElementStyling = function () {
+				addClass(element, 'draggable');
+			}
+
+			var getDropTargets = function () {
+				var tempTargets = [];
+				for (var i = 0; i < scope.targets.length; i++) {
+					var elementList = document.querySelectorAll('[mc-droppable=' + scope.targets[i] + ']');
+					for (var i = 0; i < elementList.length; i++) {
+						var target = getElementDimensions(elementList[i]);
+						tempTargets.push(target)
+					};
+				};
+				console.log(tempTargets);
+				return tempTargets;
+			};
+
+			// EVENTS
 
 			var startEventHandler = function (event) {
 				isCurrentlyMoving = true;
 				initialEventPosition = getEventCoordinates(event);
 
-				addEventListener(events.move, moveEventHandler);
-				addEventListener(events.stop, stopEventHandler);
+				addEventListener(document, events.move, moveEventHandler);
+				addEventListener(document, events.stop, stopEventHandler);
 
 				startAnimation();
 			}
@@ -129,23 +176,27 @@ angular.module('matt-casey.dragon-drop', [])
 			  initialEventPosition = emptyCoordinates;
 			  elementPosition      = emptyCoordinates;
 
-				removeEventListener(events.move, moveEventHandler);
-				removeEventListener(events.stop, stopEventHandler);
+				removeEventListener(document, events.move, moveEventHandler);
+				removeEventListener(document, events.stop, stopEventHandler);
 			}
 
+			// ANIMATIONS
+
 			var startAnimation = function () {
+				removeClass(element, 'return-animation');
+				addClass(element, 'being-dragged');
 				requestAnimationFrame(animationLoop);
 			}
 
 			var animationLoop = function () {
-				console.log(elementPosition);
 				translateElement(element, elementPosition);
-
 				isCurrentlyMoving ? requestAnimationFrame(animationLoop) : endAnimation();
 			}
 
 			var endAnimation = function () {
-
+				removeClass(element, 'being-dragged');
+				addClass(element, 'return-animation');
+				removeTranslation(element);
 			}
 
 			setupDirective();
