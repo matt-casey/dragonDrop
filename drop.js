@@ -78,17 +78,27 @@ var getElementDimensions = function (element) {
 	}
 };
 
-function isPositionWithinBounds(position, bounds){
-  if ( position.x > bounds.left  &&
-  	   position.x < bounds.right &&
-       position.y > bounds.top   &&
-       position.y < bounds.bottom )
-  {
-    return bounds;
-  }
-  else {
-  	return false;
-  }
+var checkOverlap = {
+	cursor: function (position, dropped) {
+		if ( position.x < dropped.right
+	  	&& position.x > dropped.left
+	    && position.y > dropped.top
+	    && position.y < dropped.bottom ) {
+	  	return true;
+	  }
+	  else {
+	  	return false;
+	  }
+	},
+	partial: function () {
+
+	},
+	centerOfMass: function () {
+
+	},
+	complete: function () {
+
+	}
 }
 
 /********************************************
@@ -136,25 +146,36 @@ angular.module('matt-casey.dragon-drop', [])
 	return {
 		restrict: 'A',
 		scope: {
-			targets: '='
+			targets: '=',
+			onDrop: '='
 		},
 		link: function(scope, element, attrs) {
 			var initialEventPosition = emptyCoordinates;
+			var cursorPosition       = emptyCoordinates;
 			var elementPosition      = emptyCoordinates;
+
+			var dropTargets;
+			var currentTarget;
+			var elementBounds;
+
 			var isCurrentlyMoving;
 			var events;
-			var dropTargets;
 
 			var setupDirective = function () {
 				setupElementStyling();
-				events = getEvents();
+				elementBounds = getElementDimensions(element);
+
 				dropTargets = getDropTargets();
+
+				events = getEvents();
 				addEventListener(element[0], events.start, startEventHandler);
 			}
 
 			var setupElementStyling = function () {
 				addClass(element, 'draggable');
 			}
+
+			// DROP TARGETS
 
 			var	getDropTargets = function () {
 				var tempTargets = [];
@@ -163,21 +184,31 @@ angular.module('matt-casey.dragon-drop', [])
 					for (var j = 0; j < elementList.length; j++) {
 						var target = getElementDimensions(elementList[j]);
 						addClass(target.jqElement, 'droppable');
+						console.log(scope.onDrop, scope);
+						target.onDrop = scope.onDrop[i];
 						tempTargets.push(target);
 					};
 				};
 				return tempTargets;
 			}
 
-			var checkDropTargets = function () {
+			var getCurrentTarget = function () {
 				for (var i = 0; i < dropTargets.length; i++) {
-					if (isPositionWithinBounds(elementPosition, dropTargets[i])) {
-						addClass(dropTargets[i].jqElement, 'hover');
-					}
-					else {
-						removeClass(dropTargets[i].jqElement, 'hover');
+					if (checkOverlap.cursor(cursorPosition, dropTargets[i])) {
+						return dropTargets[i];
 					}
 				};
+				return false;
+			}
+
+			var removeHoverFromAll = function () {
+				for (var i = 0; i < dropTargets.length; i++) {
+					removeClass(dropTargets[i].jqElement, 'hover');
+				};
+			}
+
+			var callDropEvent = function () {
+				currentTarget.onDrop(element, scope);
 			}
 
 			// EVENTS
@@ -185,6 +216,7 @@ angular.module('matt-casey.dragon-drop', [])
 			var startEventHandler = function (event) {
 				isCurrentlyMoving = true;
 				initialEventPosition = getEventCoordinates(event);
+				cursorPosition       = getEventCoordinates(event);
 
 				addEventListener(document, events.move, moveEventHandler);
 				addEventListener(document, events.stop, stopEventHandler);
@@ -193,14 +225,22 @@ angular.module('matt-casey.dragon-drop', [])
 			}
 
 			var moveEventHandler = function (event) {
-				var eventPosition = getEventCoordinates(event);
-				elementPosition = diffPositions(eventPosition, initialEventPosition);
+				cursorPosition = getEventCoordinates(event);
+				currentTarget = getCurrentTarget();
+				elementPosition = diffPositions(cursorPosition, initialEventPosition);
 			}
 
 			var stopEventHandler = function (event) {
+				if (currentTarget) {
+					callDropEvent();
+					currentTarget = false;
+				};
+
 				isCurrentlyMoving    = false;
+
 			  initialEventPosition = emptyCoordinates;
 			  elementPosition      = emptyCoordinates;
+			  cursorPosition       = emptyCoordinates;
 
 				removeListener(document, events.move, moveEventHandler);
 				removeListener(document, events.stop, stopEventHandler);
@@ -211,16 +251,24 @@ angular.module('matt-casey.dragon-drop', [])
 			var startAnimation = function () {
 				removeClass(element, 'return-animation');
 				addClass(element, 'being-dragged');
+				// addClass(document.body, 'no-select'); //NEEDS TO BE JQUERY ELEMENT
 				requestAnimationFrame(animationLoop);
 			}
 
 			var animationLoop = function () {
 				translateElement(element, elementPosition);
-				checkDropTargets();
+
+				removeHoverFromAll();
+				if (currentTarget) {
+					addClass(currentTarget.jqElement, 'hover');
+				};
+
 				isCurrentlyMoving ? requestAnimationFrame(animationLoop) : endAnimation();
 			}
 
 			var endAnimation = function () {
+				// removeClass(document.body, 'no-select'); //NEEDS TO BE JQUERY ELEMENT
+				removeHoverFromAll();
 				removeClass(element, 'being-dragged');
 				addClass(element, 'return-animation');
 				removeTranslation(element);

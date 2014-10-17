@@ -9,13 +9,35 @@
 	<link rel="stylesheet" href="drop.css"/>
 
 </head>
-<body>
-	<div mc-draggable targets="['type-1', 'type-3']" style="border:solid; width: 200px; height: 50px; text-align: center;">DRAGGABLE</div>
+<body ng-controller = "HomeCtrl">
+	<div mc-draggable ng-repeat="thing in things" targets="thing.targets" on-drop="thing.dropFunctions" style="border:solid; width: 200px; height: 50px; text-align: center;">
+		DRAGGABLE
+		<br>
+		{{thing.targets}}
+	</div>
 
 	<div style="position: absolute; height: 300px; width: 100%; top: 50%; margin-top: -150px;">
-		<div mc-droppable="type-1" style="position: relative; width: 33%; float: left; height: 100%;" class="gray">  DROPPABLE 1</div>
-		<div mc-droppable="type-2" style="position: relative; width: 33%; float: left; height: 100%;" class="silver">DROPPABLE 2</div>
-		<div mc-droppable="type-3" style="position: relative; width: 33%; float: left; height: 100%;" class="gray">  DROPPABLE 3</div>
+		<div mc-droppable="type-1" style="position: relative; width: 33%; float: left; height: 100%;" class="gray">
+			DROPPABLE (DELETE)
+			<br>
+			Type 1
+			<br>
+			{{list1}}
+		</div>
+		<div mc-droppable="type-2" style="position: relative; width: 33%; float: left; height: 100%;" class="silver">
+			DROPPABLE (DOUBLE)
+			<br>
+			Type 2
+			<br>
+			{{list2}}
+		</div>
+		<div mc-droppable="type-3" style="position: relative; width: 33%; float: left; height: 100%;" class="gray">
+			DROPPABLE (ALERT)
+			<br>
+			Type 3
+			<br>
+			{{list3}}
+		</div>
 	</div>
 
 	<script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
