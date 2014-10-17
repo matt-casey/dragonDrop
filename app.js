@@ -5,11 +5,8 @@
 
 'use strict';
 
-angular.module('myApp', [
-'ngRoute', 'ngSanitize', 'ngTouch', 'ngAnimate',		//additional angular modules
-'matt-casey.dragon-drop'
-]).
-config(['$routeProvider', '$locationProvider', '$compileProvider', function($routeProvider, $locationProvider, $compileProvider) {
+angular.module('myApp', [ 'matt-casey.dragon-drop' ]).
+config(['$locationProvider', '$compileProvider', function($locationProvider, $compileProvider) {
 	/**
 	setup - whitelist, appPath, html5Mode
 	@toc 1.
@@ -23,10 +20,5 @@ config(['$routeProvider', '$locationProvider', '$compileProvider', function($rou
 	// staticPath ='/dragon-drop/';		//gh-pages
 	var appPathRoute ='/';
 	var pagesPath =staticPath+'pages/';
-
-
-	$routeProvider.when(appPathRoute+'home', {templateUrl: pagesPath+'home/home.html'});
-
-	$routeProvider.otherwise({redirectTo: appPathRoute+'home'});
 
 }]);

@@ -4,8 +4,12 @@
 	"authors": [
 		"Matt Casey <mdc09321@gmail.com>"
 	],
-	"description": "Demo",
+	"description": "Angular drag and drop directive",
 	"keywords": [
+		"angular",
+    "angularjs",
+    "drag",
+    "drop"
 	],
 	"license": "MIT",
 	"ignore": [
@@ -17,10 +21,6 @@
 	],
 	"dependencies": {
 		"angular":"~1.2.0",
-		"angular-animate":"~1.2.0",
-		"angular-sanitize":"~1.2.0",
-		"angular-touch":"~1.2.0",
-		"angular-route":"~1.2.0",
 		"jquery":"2.1.1"
 	},
 	"devDependencies": {
