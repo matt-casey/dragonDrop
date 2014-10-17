@@ -30,7 +30,8 @@ angular.module('myApp').controller('HomeCtrl', ['$scope', function($scope) {
 
   }
   $scope.doubleEl = function (el, scope) {
-
+    $scope.list2.push(scope.$parent.thing.name);
+    console.log($scope.list2);
   }
   $scope.alertEl = function (el, scope) {
     alert(el);

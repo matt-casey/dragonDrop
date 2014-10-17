@@ -209,6 +209,8 @@ angular.module('matt-casey.dragon-drop', [])
 
 			var callDropEvent = function () {
 				currentTarget.onDrop(element, scope);
+				scope.$apply();
+				currentTarget = false;
 			}
 
 			// EVENTS

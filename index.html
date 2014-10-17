@@ -10,7 +10,7 @@
 
 </head>
 <body ng-controller = "HomeCtrl">
-	<div mc-draggable ng-repeat="thing in things" targets="thing.targets" on-drop="thing.dropFunctions" style="border:solid; width: 200px; height: 50px; text-align: center;">
+	<div mc-draggable ng-repeat="thing in things" targets="thing.targets" on-drop="[doubleEl, alertEl]" style="border:solid; width: 200px; height: 50px; text-align: center;">
 		DRAGGABLE
 		<br>
 		{{thing.targets}}
