@@ -4,7 +4,50 @@ angular.module('mc-drag-and-drop.mcDraggable', [
   'mc-drag-and-drop.mcEvents'
 ])
 .directive('mcDraggable', ['mcAnimation', 'mcCss', 'mcEvents', function (mcAnimation, mcCss, mcEvents) {
-  var emptyCoordinates = {x:0, y:0};
+
+  var classesWhileAnimating    = ['being-dragged'];
+  var classesWhileNotAnimating = ['return-animation'];
+
+  var emptyCoordinates = { x:0, y:0 };
+  var initialEventPosition = emptyCoordinates;
+  var cursorPosition       = emptyCoordinates;
+  var elementPosition      = emptyCoordinates;
+
+  var body;
+  var dropTargets;
+  var currentTarget;
+  var previousTarget;
+  var elementBounds;
+
+  var isCurrentlyMoving;
+  var dragEvents;
+
+  var getDropTargets = function (targetList) {
+    var tempTargets = [];
+
+    for (var i = 0; i < targetList.length; i++) {
+      var attributeName = '[mc-droppable=' + targetList[i].type + ']';
+      var elementList = mcCss.findByAttribute(attributeName);
+
+      for (var j = 0; j < elementList.length; j++) {
+        var tempTarget = constructTarget(elementList[j], targetList[i])
+        tempTargets.push(tempTarget);
+      }
+    }
+    return tempTargets;
+  };
+
+  var constructTarget = function (element, targetInfo) {
+    var tempTarget = mcCss.getElementDimensions(element);
+
+    mcCss.addClass(tempTarget.jqElement, 'droppable');
+
+    tempTarget.onDrop  = targetInfo.onDrop;
+    tempTarget.onHover = targetInfo.onHover;
+
+    return tempTarget;
+  };
+
   return {
     restrict: 'A',
     scope: {
@@ -12,95 +55,39 @@ angular.module('mc-drag-and-drop.mcDraggable', [
       targets: '='
     },
     link: function(scope, element, attrs) {
-      var initialEventPosition = emptyCoordinates;
-      var cursorPosition       = emptyCoordinates;
-      var elementPosition      = emptyCoordinates;
-
-      var dropTargets;
-      var currentTarget;
-      var elementBounds;
-
-      var isCurrentlyMoving;
-      var events;
 
       var setupDirective = function () {
-        setupElementStyling();
-        // elementBounds = mcCss.getElementDimensions(element);
-
-        dropTargets = getDropTargets();
-
-        events = mcEvents.getEvents();
-        mcEvents.addEventListener(element[0], events.start, startEventHandler);
-      };
-
-      var setupElementStyling = function () {
         mcCss.addClass(element, 'draggable');
+        body = $('body');
+
+        setDropTargets();
+        mcEvents.addWindowResizeListener(setDropTargets);
+
+        dragEvents = mcEvents.getDragEvents();
+        mcEvents.addEventListener(element[0], dragEvents.start, startEventHandler);
       };
 
-      // DROP TARGETS
-
-      var getDropTargets = function () {
-        var tempTargets = [];
-        for (var i = 0; i < scope.targets.length; i++) {
-          var elementList = document.querySelectorAll('[mc-droppable=' + scope.targets[i].type + ']');
-          for (var j = 0; j < elementList.length; j++) {
-            var target = mcCss.getElementDimensions(elementList[j]);
-            mcCss.addClass(target.jqElement, 'droppable');
-
-            target.onDrop  = scope.targets[i].onDrop;
-            target.onHover = scope.targets[i].onHover;
-            target.onError = scope.targets[i].onError;
-
-            tempTargets.push(target);
-          }
-        }
-        return tempTargets;
-      };
-
-      var getCurrentTarget = function () {
-        for (var i = 0; i < dropTargets.length; i++) {
-          if (mcCss.checkOverlap.cursor(cursorPosition, dropTargets[i])) {
-            return dropTargets[i];
-          }
-        }
-        return false;
-      };
-
-      var removeHoverFromAll = function () {
-        for (var i = 0; i < dropTargets.length; i++) {
-          mcCss.removeClass(dropTargets[i].jqElement, 'hover');
-        }
-      };
-
-      var callDropEvent = function () {
-        try {
-          currentTarget.onDrop(element, scope);
-        }
-        catch (err) {
-          if (currentTarget.onError) {
-            currentTarget.onError(err);
-          };
-        }
-        scope.$apply();
-      };
-
-      // EVENTS
+      // EVENT HANDLERS
 
       var startEventHandler = function (event) {
         isCurrentlyMoving = true;
+
         initialEventPosition = mcEvents.getEventCoordinates(event);
         cursorPosition       = mcEvents.getEventCoordinates(event);
 
-        mcEvents.addEventListener(document, events.move, moveEventHandler);
-        mcEvents.addEventListener(document, events.stop, stopEventHandler);
+        mcEvents.addEventListener(document, dragEvents.move, moveEventHandler);
+        mcEvents.addEventListener(document, dragEvents.stop, stopEventHandler);
 
         startAnimation();
       };
 
       var moveEventHandler = function (event) {
         cursorPosition = mcEvents.getEventCoordinates(event);
-        currentTarget = getCurrentTarget();
         elementPosition = mcEvents.diffPositions(cursorPosition, initialEventPosition);
+
+        currentTarget = mcCss.findOverlap(cursorPosition, dropTargets, 'cursor');
+
+        callHoverEvent();
       };
 
       var stopEventHandler = function (event) {
@@ -115,35 +102,53 @@ angular.module('mc-drag-and-drop.mcDraggable', [
         elementPosition      = emptyCoordinates;
         cursorPosition       = emptyCoordinates;
 
-        mcEvents.removeListener(document, events.move, moveEventHandler);
-        mcEvents.removeListener(document, events.stop, stopEventHandler);
+        mcEvents.removeListener(document, dragEvents.move, moveEventHandler);
+        mcEvents.removeListener(document, dragEvents.stop, stopEventHandler);
+      };
+
+      // DROP TARGETS
+
+      var setDropTargets = function () {
+        dropTargets = getDropTargets(scope.targets);
+      }
+
+      var callDropEvent = function () {
+        currentTarget.onDrop && currentTarget.onDrop(element, scope);
+        scope.$apply();
+      };
+
+      var callHoverEvent = function () {
+        currentTarget.onHover && currentTarget.onHover(element, scope);
+        scope.$apply();
       };
 
       // ANIMATIONS
 
       var startAnimation = function () {
-        mcCss.removeClass(element, 'return-animation');
-        mcCss.addClass(element, 'being-dragged');
-        // mcCss.addClass(document.body, 'no-select'); //NEEDS TO BE JQUERY ELEMENT
+        mcCss.removeClasses(element, classesWhileNotAnimating);
+        mcCss.addClasses(element, classesWhileAnimating);
+        mcCss.addClass(body, 'no-select');
         mcAnimation.requestFrame(animationLoop);
       };
 
       var animationLoop = function () {
         mcCss.translateElement(element, elementPosition);
 
-        removeHoverFromAll();
+        if (previousTarget) {
+          mcCss.removeClass(previousTarget.jqElement, 'hover');
+        }
         if (currentTarget) {
           mcCss.addClass(currentTarget.jqElement, 'hover');
+          previousTarget = currentTarget;
         }
 
         isCurrentlyMoving ? mcAnimation.requestFrame(animationLoop) : endAnimation();
       };
 
       var endAnimation = function () {
-        // mcCss.removeClass(document.body, 'no-select'); //NEEDS TO BE JQUERY ELEMENT
-        removeHoverFromAll();
-        mcCss.removeClass(element, 'being-dragged');
-        mcCss.addClass(element, 'return-animation');
+        mcCss.removeClass(body, 'no-select');
+        mcCss.removeClasses(element, classesWhileAnimating);
+        mcCss.addClasses(element, classesWhileNotAnimating);
         mcCss.removeTranslation(element);
       };
 

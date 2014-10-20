@@ -23,6 +23,22 @@ angular.module('mc-drag-and-drop.mcCss', [])
     jqElement[0].classList.remove(className);
   };
 
+  _public.toggleClass = function (jqElement, className) {
+    jqElement[0].classList.toggle(className);
+  };
+
+  _public.addClasses = function (jqElement, classNames) {
+    for (var i = classNames.length - 1; i >= 0; i--) {
+      _public.addClass(jqElement, classNames[i])
+    };
+  };
+
+  _public.removeClasses = function (jqElement, classNames) {
+    for (var i = classNames.length - 1; i >= 0; i--) {
+      _public.removeClass(jqElement, classNames[i])
+    };
+  };
+
   _public.getElementDimensions = function (element) {
     var jqElement = $(element);
     var offset    = jqElement.offset();
@@ -35,6 +51,10 @@ angular.module('mc-drag-and-drop.mcCss', [])
       top:       offset.top,
       bottom:    offset.top  + jqElement.height()
     };
+  };
+
+  _public.findByAttribute = function (attribute) {
+    return document.querySelectorAll(attribute);
   };
 
   _public.checkOverlap = {
@@ -58,6 +78,16 @@ angular.module('mc-drag-and-drop.mcCss', [])
     complete: function () {
 
     }
+  };
+
+  _public.findOverlap = function (position, targets, type) {
+    var overlapType = type || 'cursor';
+    for (var i = 0; i < targets.length; i++) {
+      if (_public.checkOverlap[overlapType](position, targets[i])) {
+        return targets[i];
+      }
+    }
+    return false;
   };
 
   return _public;

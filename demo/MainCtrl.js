@@ -35,14 +35,12 @@ angular.module('myApp').controller('MainCtrl', ['$scope', function($scope) {
     {
       type: 'type-2',
       onDrop:  doubleEl,
-      onHover: undefined,
-      onError: consoleLogIt
+      onHover: undefined
     },
     {
       type: 'type-3',
       onDrop:  alertEl,
-      onHover: undefined,
-      onError: consoleLogIt
+      onHover: consoleLogIt
     }
   ]
 
@@ -53,14 +51,12 @@ angular.module('myApp').controller('MainCtrl', ['$scope', function($scope) {
         {
           type: 'type-1',
           onDrop: deleteEl,
-          onHover: undefined,
-          onError: consoleLogIt
+          onHover: undefined
         },
         {
           type: 'type-2',
           onDrop: doubleEl,
-          onHover: undefined,
-          onError: consoleLogIt
+          onHover: undefined
         }
       ]
     }

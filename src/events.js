@@ -2,7 +2,7 @@ angular.module('mc-drag-and-drop.mcEvents', [])
 .factory('mcEvents', ['hasTouchEvents', 'isAndroid', function (hasTouchEvents, isAndroid) {
   var _public = {};
 
-  _public.getEvents = function () {
+  _public.getDragEvents = function () {
     return {
       start: (hasTouchEvents ? "touchstart" : "mousedown"),
       move:  (hasTouchEvents ? "touchmove"  : "mousemove"),
@@ -31,6 +31,12 @@ angular.module('mc-drag-and-drop.mcEvents', [])
   _public.removeListener = function (watchedElement, event, onEvent) {
     watchedElement.removeEventListener(event, onEvent, false);
   };
+
+  _public.addWindowResizeListener = function (callback) {
+    window.onresize = function (event) {
+      callback(event);
+    };
+  }
 
   return _public;
 }]);
