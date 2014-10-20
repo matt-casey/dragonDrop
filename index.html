@@ -11,13 +11,13 @@
 </head>
 <body ng-controller = "MainCtrl">
 
-	<div mc-draggable item-info="'singleTarget'" targets="singleElementTargets" style="border:solid; width: 200px; height: 50px; text-align: center;">
+	<div mc-draggable returned-info="singleElement.id" targets="singleElement.targets" style="border:solid; width: 200px; height: 50px; text-align: center;">
 		DRAGGABLE Not Repeated
 		<br>
-		{{singleElementTargets}}
+		{{singleElement.targets}}
 	</div>
 
-	<div ng-repeat="item in items" mc-draggable item-info="item.name" targets="item.targets" style="border:solid; width: 200px; height: 50px; text-align: center;">
+	<div ng-repeat="item in items" mc-draggable returned-info="item.id" targets="item.targets" style="border:solid; width: 200px; height: 50px; text-align: center;">
 		DRAGGABLE REPEATED {{item.name}}
 		<br>
 		{{item.targets}}

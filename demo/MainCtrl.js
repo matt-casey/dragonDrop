@@ -8,44 +8,47 @@ angular.module('myApp').controller('MainCtrl', ['$scope', function($scope) {
   $scope.list2 = [];
   $scope.list3 = [];
 
-  var deleteEl = function (el, scope) {
-    console.log('delete', el, scope);
+  var deleteEl = function (itemInfo) {
+    console.log('delete', itemInfo);
     for (var i = $scope.items.length - 1; i >= 0; i--) {
-      if ($scope.items[i].name === scope.itemInfo) {
+      if ($scope.items[i].id === itemInfo) {
         $scope.items.splice(i,1);
       }
     };
   };
 
-  var doubleEl = function (el, scope) {
-    console.log(el, scope);
-    $scope.list2.push(scope.itemInfo);
+  var doubleEl = function (itemInfo) {
+    $scope.list2.push(itemInfo);
   };
 
-  var alertEl = function (el, scope) {
-    alert(scope.itemInfo);
-    console.log(el, scope);
+  var alertEl = function (itemInfo) {
+    alert(itemInfo);
+    console.log(itemInfo);
   };
 
-  var consoleLogIt = function (el, scope) {
-    console.log('YES', el);
+  var consoleLogIt = function (itemInfo) {
+    console.log('YES', itemInfo);
   };
 
-  $scope.singleElementTargets = [
-    {
-      type: 'type-2',
-      onDrop:  doubleEl,
-      onHover: undefined
-    },
-    {
-      type: 'type-3',
-      onDrop:  alertEl,
-      onHover: consoleLogIt
-    }
-  ]
+  $scope.singleElement = {
+    id: '342',
+    targets: [
+      {
+        type: 'type-2',
+        onDrop:  doubleEl,
+        onHover: undefined
+      },
+      {
+        type: 'type-3',
+        onDrop:  alertEl,
+        onHover: consoleLogIt
+      }
+    ]
+  };
 
   $scope.items = [
     {
+      id: '0123',
       name: 'item-1',
       targets: [
         {
@@ -57,6 +60,17 @@ angular.module('myApp').controller('MainCtrl', ['$scope', function($scope) {
           type: 'type-2',
           onDrop: doubleEl,
           onHover: undefined
+        }
+      ]
+    },
+    {
+      id: '321',
+      name: 'item-2',
+      targets: [
+        {
+          type: 'type-2',
+          onDrop: doubleEl,
+          onHover: consoleLogIt
         }
       ]
     }
