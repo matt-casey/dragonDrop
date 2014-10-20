@@ -1,0 +1,1 @@
+angular.module('mc-drag-and-drop.mcSortable', []);
