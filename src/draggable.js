@@ -8,7 +8,7 @@ angular.module('mc-drag-and-drop.mcDraggable', [
   return {
     restrict: 'A',
     scope: {
-      identity: '=',
+      itemInfo: '=',
       targets: '='
     },
     link: function(scope, element, attrs) {
@@ -54,7 +54,6 @@ angular.module('mc-drag-and-drop.mcDraggable', [
             tempTargets.push(target);
           }
         }
-        console.log(tempTargets);
         return tempTargets;
       };
 
@@ -78,7 +77,6 @@ angular.module('mc-drag-and-drop.mcDraggable', [
           currentTarget.onDrop(element, scope);
         }
         catch (err) {
-          console.log('ERROR ON EVENT CALL', err);
           if (currentTarget.onError) {
             currentTarget.onError(err);
           };

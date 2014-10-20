@@ -11,7 +11,7 @@ angular.module('myApp').controller('MainCtrl', ['$scope', function($scope) {
   var deleteEl = function (el, scope) {
     console.log('delete', el, scope);
     for (var i = $scope.items.length - 1; i >= 0; i--) {
-      if ($scope.items[i].name === scope.identity) {
+      if ($scope.items[i].name === scope.itemInfo) {
         $scope.items.splice(i,1);
       }
     };
@@ -19,11 +19,11 @@ angular.module('myApp').controller('MainCtrl', ['$scope', function($scope) {
 
   var doubleEl = function (el, scope) {
     console.log(el, scope);
-    $scope.list2.push(scope.identity);
+    $scope.list2.push(scope.itemInfo);
   };
 
   var alertEl = function (el, scope) {
-    alert(el);
+    alert(scope.itemInfo);
     console.log(el, scope);
   };
 
@@ -35,6 +35,12 @@ angular.module('myApp').controller('MainCtrl', ['$scope', function($scope) {
     {
       type: 'type-2',
       onDrop:  doubleEl,
+      onHover: undefined,
+      onError: consoleLogIt
+    },
+    {
+      type: 'type-3',
+      onDrop:  alertEl,
       onHover: undefined,
       onError: consoleLogIt
     }
