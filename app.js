@@ -5,7 +5,7 @@
 
 'use strict';
 
-angular.module('myApp', [ 'matt-casey.dragon-drop' ]).
+angular.module('myApp', [ 'mc-drag-and-drop' ]).
 config(['$locationProvider', '$compileProvider', function($locationProvider, $compileProvider) {
 	/**
 	setup - whitelist, appPath, html5Mode

@@ -42,20 +42,20 @@ module.exports = function(grunt) {
 			},
 			jshint: {
 				options: {
-					//force:          true,
-					globalstrict:   true,
-					//sub:            true,
-					node: true,
-					loopfunc: true,
-					browser:        true,
-					devel:          true,
+					//force:      true,
+					globalstrict: true,
+					//sub:        true,
+					node:         true,
+					loopfunc:     true,
+					browser:      true,
+					devel:        true,
 					globals: {
 						angular:    false,
 						$:          false,
-						moment:		false,
-						Pikaday: false,
-						module: false,
-						forge: false
+						moment:		  false,
+						Pikaday:    false,
+						module:     false,
+						forge: 			false
 					}
 				},
 				beforeconcat:   {
@@ -84,7 +84,7 @@ module.exports = function(grunt) {
 				},
 				build: {
 					files:  {},
-					src:    'drop.js',
+					src:    'src/*.js',
 					dest:   'drop.min.js'
 				}
 			},
@@ -112,8 +112,8 @@ module.exports = function(grunt) {
 				}
 			}*/
 		});
-		
-		
+
+
 		/**
 		register/define grunt tasks
 		@toc 6.
@@ -121,7 +121,7 @@ module.exports = function(grunt) {
 		// Default task(s).
 		// grunt.registerTask('default', ['jshint:beforeconcat', 'less:development', 'concat:devJs', 'concat:devCss']);
 		grunt.registerTask('default', ['jshint:beforeconcatQ', 'less:development', 'cssmin', 'uglify:build']);
-	
+
 	}
 	init({});		//initialize here for defaults (init may be called again later within a task)
 
