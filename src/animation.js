@@ -1,10 +1,10 @@
 angular.module('mc-drag-and-drop.mcAnimation', [])
 .factory('mcAnimation', [function () {
-  _public = {};
+  var _public = {};
 
   _public.requestFrame = function (callbackFunc) {
     requestAnimationFrame(callbackFunc);
-  }
+  };
 
   var requestAnimationFrame = (function () {
     return  window.requestAnimationFrame       ||

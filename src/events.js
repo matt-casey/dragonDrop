@@ -1,6 +1,6 @@
 angular.module('mc-drag-and-drop.mcEvents', [])
 .factory('mcEvents', ['hasTouchEvents', 'isAndroid', function (hasTouchEvents, isAndroid) {
-  _public = {};
+  var _public = {};
 
   _public.getEvents = function () {
     return {

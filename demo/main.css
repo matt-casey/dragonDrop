@@ -21,3 +21,9 @@
   -ms-user-select: none;
   user-select: none;
 }
+.silver {
+  background: silver;
+}
+.gray {
+  background: gray;
+}

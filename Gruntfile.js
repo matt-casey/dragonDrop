@@ -85,7 +85,7 @@ module.exports = function(grunt) {
 				build: {
 					files:  {},
 					src:    'src/*.js',
-					dest:   'drop.min.js'
+					dest:   'dist/drop.min.js'
 				}
 			},
 			less: {
@@ -93,15 +93,15 @@ module.exports = function(grunt) {
 					options: {
 					},
 					files: {
-						"main.css": "_base.less",
-						"drop.css": "_drop.less"
+						"demo/main.css": "demo/_base.less",
+						"dist/drop.css": "src/_drop.less"
 					}
 				}
 			},
 			cssmin: {
 				dev: {
-					src: ['drop.css'],
-					dest: 'drop.min.css'
+					src: ['dist/drop.css'],
+					dest: 'dist/drop.min.css'
 				}
 			}/*,
 			karma: {
