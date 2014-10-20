@@ -11,10 +11,16 @@
 </head>
 <body ng-controller = "MainCtrl">
 
-	<div mc-draggable targets="['type-2']" on-drop="[doubleEl]" style="border:solid; width: 200px; height: 50px; text-align: center;">
+	<div mc-draggable identity="'singleTarget'" targets="singleElementTargets" style="border:solid; width: 200px; height: 50px; text-align: center;">
 		DRAGGABLE Not Repeated
 		<br>
-		type-2
+		{{singleElementTargets}}
+	</div>
+
+	<div ng-repeat="item in items" mc-draggable identity="item.name" targets="item.targets" style="border:solid; width: 200px; height: 50px; text-align: center;">
+		DRAGGABLE REPEATED {{item.name}}
+		<br>
+		{{item.targets}}
 	</div>
 
 	<div style="position: absolute; height: 300px; width: 100%; top: 50%; margin-top: -150px;">
@@ -44,15 +50,15 @@
 	<script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
 	<script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
 
-<!--
 	<script type="text/javascript" src="src/main.js"></script>
 	<script type="text/javascript" src="src/css.js"></script>
 	<script type="text/javascript" src="src/animation.js"></script>
 	<script type="text/javascript" src="src/events.js"></script>
 	<script type="text/javascript" src="src/sortable.js"></script>
 	<script type="text/javascript" src="src/draggable.js"></script>
--->
+<!--
 	<script type="text/javascript" src="dist/drop.min.js"></script>
+-->
 
 	<script type="text/javascript" src="demo/app.js"></script>
 

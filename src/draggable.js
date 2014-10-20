@@ -8,8 +8,8 @@ angular.module('mc-drag-and-drop.mcDraggable', [
   return {
     restrict: 'A',
     scope: {
-      targets: '=',
-      onDrop: '='
+      identity: '=',
+      targets: '='
     },
     link: function(scope, element, attrs) {
       var initialEventPosition = emptyCoordinates;
@@ -42,15 +42,19 @@ angular.module('mc-drag-and-drop.mcDraggable', [
       var getDropTargets = function () {
         var tempTargets = [];
         for (var i = 0; i < scope.targets.length; i++) {
-          var elementList = document.querySelectorAll('[mc-droppable=' + scope.targets[i] + ']');
+          var elementList = document.querySelectorAll('[mc-droppable=' + scope.targets[i].type + ']');
           for (var j = 0; j < elementList.length; j++) {
             var target = mcCss.getElementDimensions(elementList[j]);
             mcCss.addClass(target.jqElement, 'droppable');
-            console.log(scope.onDrop, scope);
-            target.onDrop = scope.onDrop[i];
+
+            target.onDrop  = scope.targets[i].onDrop;
+            target.onHover = scope.targets[i].onHover;
+            target.onError = scope.targets[i].onError;
+
             tempTargets.push(target);
           }
         }
+        console.log(tempTargets);
         return tempTargets;
       };
 
@@ -74,6 +78,7 @@ angular.module('mc-drag-and-drop.mcDraggable', [
           currentTarget.onDrop(element, scope);
         }
         catch (err) {
+          console.log('ERROR ON EVENT CALL', err);
           if (currentTarget.onError) {
             currentTarget.onError(err);
           };

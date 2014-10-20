@@ -8,23 +8,56 @@ angular.module('myApp').controller('MainCtrl', ['$scope', function($scope) {
   $scope.list2 = [];
   $scope.list3 = [];
 
-  // $scope.things = [
-  //   {
-  //     targets: {
-  //       'type-1':someFunction
-  //     }
-  //   }
-  // ]
+  var deleteEl = function (el, scope) {
+    console.log('delete', el, scope);
+    for (var i = $scope.items.length - 1; i >= 0; i--) {
+      if ($scope.items[i].name === scope.identity) {
+        $scope.items.splice(i,1);
+      }
+    };
+  };
 
-  $scope.deleteEl = function () {
-
-  }
-  $scope.doubleEl = function (el, scope) {
-    $scope.list2.push(scope.$parent.thing.name);
+  var doubleEl = function (el, scope) {
     console.log(el, scope);
-  }
-  $scope.alertEl = function (el, scope) {
+    $scope.list2.push(scope.identity);
+  };
+
+  var alertEl = function (el, scope) {
     alert(el);
     console.log(el, scope);
-  }
+  };
+
+  var consoleLogIt = function (el, scope) {
+    console.log('YES', el);
+  };
+
+  $scope.singleElementTargets = [
+    {
+      type: 'type-2',
+      onDrop:  doubleEl,
+      onHover: undefined,
+      onError: consoleLogIt
+    }
+  ]
+
+  $scope.items = [
+    {
+      name: 'item-1',
+      targets: [
+        {
+          type: 'type-1',
+          onDrop: deleteEl,
+          onHover: undefined,
+          onError: consoleLogIt
+        },
+        {
+          type: 'type-2',
+          onDrop: doubleEl,
+          onHover: undefined,
+          onError: consoleLogIt
+        }
+      ]
+    }
+  ]
+
 }]);
