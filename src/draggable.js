@@ -167,7 +167,7 @@ angular.module('mc-drag-and-drop.mcDraggable', [
       var moveEventHandler = function (event) {
         cursorPosition = mcEvents.getEventCoordinates(event);
         var unboundedPosition = mcEvents.diffPositions(cursorPosition, initialEventPosition);
-        elementPosition = unboundedPosition;
+        elementPosition = mcCollisions.getBoundedPosition(unboundedPosition, elementDimensions, translationBounds);
 
         targets.setCurrentTarget(cursorPosition, elementPosition, elementDimensions, collisionDetection);
         var positionDetails;

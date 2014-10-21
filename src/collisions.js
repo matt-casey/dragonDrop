@@ -38,6 +38,35 @@ angular.module('mc-drag-and-drop.mcCollisions', [
     return newDimensions;
   }
 
+  _public.getBoundedPosition = function (unboundedPosition, elementDimensions, translationBounds) {
+    var newPosition = {};
+
+    var attemptedDimensions = _public.getTranslatedDimensions(elementDimensions, unboundedPosition);
+
+    if (attemptedDimensions.left <= translationBounds.left) {
+      newPosition.x = translationBounds.left - elementDimensions.left;
+    }
+    else if (attemptedDimensions.right >= translationBounds.right) {
+      newPosition.x = translationBounds.right - elementDimensions.right;
+    }
+    else{
+      newPosition.x = unboundedPosition.x;
+    };
+
+    if (attemptedDimensions.top <= translationBounds.top) {
+      newPosition.y = translationBounds.top - elementDimensions.top;
+    }
+    else if (attemptedDimensions.bottom >= translationBounds.bottom) {
+      newPosition.y = translationBounds.bottom - elementDimensions.bottom;
+    }
+    else{
+      newPosition.y = unboundedPosition.y;
+    };
+
+
+    return newPosition;
+  }
+
   var isPointWithinBox = function (point, box) {
     if ( point.x < box.right &&
          point.x > box.left  &&
