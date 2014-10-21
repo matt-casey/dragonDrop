@@ -13,9 +13,6 @@ pids
 logs
 results
 
-demo
-src
-
 node_modules
 
 bower_components
