@@ -45,8 +45,8 @@ angular.module('mc-drag-and-drop.mcDraggable', [
       return targetList;
     };
 
-    var setCurrentTarget = function (currentPosition) {
-      currentTarget = mcCss.findOverlap(currentPosition, targetList, 'cursor');
+    var setCurrentTarget = function (currentPosition, collisionType) {
+      currentTarget = mcCss.findOverlap(currentPosition, targetList, collisionType);
     };
 
     var getCurrentTarget = function () {
@@ -88,34 +88,38 @@ angular.module('mc-drag-and-drop.mcDraggable', [
 }])
 
 .directive('mcDraggable', ['mcAnimation', 'mcCss', 'mcEvents', 'DropTargets', function (mcAnimation, mcCss, mcEvents, DropTargets) {
-
-  var classesWhileAnimating    = ['being-dragged'];
-  var classesWhileNotAnimating = ['return-animation'];
-
-  var emptyCoordinates = { x:0, y:0 };
-  var initialEventPosition = emptyCoordinates;
-  var cursorPosition       = emptyCoordinates;
-  var elementPosition      = emptyCoordinates;
-
-  var body;
-  var elementBounds;
-
-  var isCurrentlyMoving;
-  var dragEvents;
-
   return {
     restrict: 'A',
     scope: {
       itemInfo: '=',
       targets: '=',
-      returnedInfo: '='
+      returnedInfo: '=',
+      collisionDetection: '='
     },
     link: function(scope, element, attrs) {
+      var classesWhileAnimating    = ['being-dragged'];
+      var classesWhileNotAnimating = ['return-animation'];
+
+      var emptyCoordinates = { x:0, y:0 };
+
+      var initialEventPosition = emptyCoordinates;
+      var cursorPosition       = emptyCoordinates;
+      var elementPosition      = emptyCoordinates;
+
+      var body;
+      var elementDimensions;
+      var collisionDetection;
+
+      var isCurrentlyMoving;
+      var dragEvents;
       var targets;
 
       var setupDirective = function () {
         mcCss.addClass(element, 'draggable');
         body = $('body');
+        elementDimensions = mcCss.getElementDimensions(element);
+        // collisionDetection = scope.collisionDetection || 'cursor';
+        collisionDetection = 'cursor';
 
         targets = new DropTargets();
         targets.updateDropTargets(scope.targets);
@@ -143,7 +147,7 @@ angular.module('mc-drag-and-drop.mcDraggable', [
         cursorPosition = mcEvents.getEventCoordinates(event);
         elementPosition = mcEvents.diffPositions(cursorPosition, initialEventPosition);
 
-        targets.setCurrentTarget(cursorPosition);
+        targets.setCurrentTarget(cursorPosition, collisionDetection);
         targets.callHoverEvent(scope.returnedInfo);
       };
 

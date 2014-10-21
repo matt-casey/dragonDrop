@@ -42,14 +42,19 @@ angular.module('mc-drag-and-drop.mcCss', [])
   _public.getElementDimensions = function (element) {
     var jqElement = $(element);
     var offset    = jqElement.offset();
+    var width     = jqElement.width();
+    var height     = jqElement.height();
     return {
       element:   element,
       jqElement: jqElement,
 
+      width:     width,
+      height:    height,
+
       left:      offset.left,
-      right:     offset.left + jqElement.width(),
+      right:     offset.left + width,
       top:       offset.top,
-      bottom:    offset.top  + jqElement.height()
+      bottom:    offset.top  + height
     };
   };
 
@@ -57,23 +62,30 @@ angular.module('mc-drag-and-drop.mcCss', [])
     return document.querySelectorAll(attribute);
   };
 
+  var isPointWithinBox = function (point, box) {
+    if ( point.x < box.right &&
+         point.x > box.left  &&
+         point.y > box.top   &&
+         point.y < box.bottom ) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
   _public.checkOverlap = {
-    cursor: function (position, dropped) {
-      if ( position.x < dropped.right &&
-           position.x > dropped.left  &&
-           position.y > dropped.top   &&
-           position.y < dropped.bottom ) {
-        return true;
-      }
-      else {
-        return false;
-      }
+    cursor: function (cursorPosition, target) {
+      return isPointWithinBox(cursorPosition, target);
     },
     partial: function () {
 
     },
-    centerOfMass: function () {
-
+    centerOfMass: function (offsetPosition, dimensions, target) {
+      var centerPosition = {};
+      centerPosition.x = offsetPosition.x + (dimensions.width / 2);
+      centerPosition.y = offsetPosition.y + (dimensions.height / 2);
+      return isPointWithinBox(centerPosition, target);
     },
     complete: function () {
 

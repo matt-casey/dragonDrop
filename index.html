@@ -9,43 +9,10 @@
 	<link rel="stylesheet" href="dist/drop.min.css"/>
 
 </head>
-<body ng-controller = "MainCtrl">
+<body ng-controller = "MainCtrl" ng-init="include = 'demo/main.html'">
 
-	<div mc-draggable returned-info="singleElement.id" targets="singleElement.targets" style="border:solid; width: 200px; height: 50px; text-align: center;">
-		DRAGGABLE Not Repeated
-		<br>
-		{{singleElement.targets}}
-	</div>
-
-	<div ng-repeat="item in items" mc-draggable returned-info="item.id" targets="item.targets" style="border:solid; width: 200px; height: 50px; text-align: center;">
-		DRAGGABLE REPEATED {{item.name}}
-		<br>
-		{{item.targets}}
-	</div>
-
-	<div style="position: absolute; height: 300px; width: 100%; top: 50%; margin-top: -150px;">
-		<div mc-droppable="type-1" style="position: relative; width: 33%; float: left; height: 100%;" class="gray">
-			DROPPABLE (DELETE)
-			<br>
-			Type 1
-			<br>
-			{{list1}}
-		</div>
-		<div mc-droppable="type-2" style="position: relative; width: 33%; float: left; height: 100%;" class="silver">
-			DROPPABLE (DOUBLE)
-			<br>
-			Type 2
-			<br>
-			{{list2}}
-		</div>
-		<div mc-droppable="type-3" style="position: relative; width: 33%; float: left; height: 100%;" class="gray">
-			DROPPABLE (ALERT)
-			<br>
-			Type 3
-			<br>
-			{{list3}}
-		</div>
-	</div>
+	<div ng-click="include = 'demo/main.html'"> |_DRAG_| </div> <div ng-click="include = 'demo/sortable.html'"> |_SORT_| </div>
+	<div ng-include="include"></div>
 
 	<script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
 	<script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -63,5 +30,6 @@
 	<script type="text/javascript" src="demo/app.js"></script>
 
 	<script type="text/javascript" src="demo/MainCtrl.js"></script>
+	<script type="text/javascript" src="demo/SortCtrl.js"></script>
 </body>
 </html>
