@@ -2,6 +2,7 @@
 
 angular.module('mc-drag-and-drop', [
   'mc-drag-and-drop.mcCss',
+  'mc-drag-and-drop.mcCollisions',
   'mc-drag-and-drop.mcAnimation',
   'mc-drag-and-drop.mcEvents',
   'mc-drag-and-drop.mcDraggable',

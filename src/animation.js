@@ -17,5 +17,14 @@ angular.module('mc-drag-and-drop.mcAnimation', [])
             };
   })();
 
+  _public.startAnimation = function (startAnimation, animationLoop, endAnimation, continueAnimation) {
+    var loop = function () {
+      animationLoop();
+      continueAnimation() ? requestAnimationFrame(loop) : endAnimation();
+    }
+    startAnimation();
+    requestAnimationFrame(loop);
+  }
+
   return _public;
 }]);

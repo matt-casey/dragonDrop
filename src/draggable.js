@@ -1,10 +1,11 @@
 angular.module('mc-drag-and-drop.mcDraggable', [
   'mc-drag-and-drop.mcCss',
+  'mc-drag-and-drop.mcCollisions',
   'mc-drag-and-drop.mcAnimation',
   'mc-drag-and-drop.mcEvents'
 ])
 
-.factory('DropTargets', ['$rootScope', 'mcCss', 'mcEvents', function ($rootScope, mcCss, mcEvents) {
+.factory('DropTargets', ['$rootScope', 'mcCss', 'mcCollisions', 'mcEvents', function ($rootScope, mcCss, mcCollisions, mcEvents) {
   var DropTargets = function () {
 
     var targetList = [];
@@ -12,28 +13,31 @@ angular.module('mc-drag-and-drop.mcDraggable', [
     var currentTarget;
     var previousTarget;
 
-    var updateDropTargets = function (newRawList) {
-      if (newRawList) {
-        rawList = newRawList;
-      };
 
+    var setDropTargets = function (newRawList) {
+      rawList = newRawList;
+      updateTargetList();
+    };
+
+    var updateTargetList = function () {
       targetList = [];
 
       for (var i = 0; i < rawList.length; i++) {
         var attributeName = '[mc-droppable=' + rawList[i].type + ']';
-        var elementList = mcCss.findByAttribute(attributeName);
+        var elementList = mcCss.findAllByAttribute(attributeName);
 
         for (var j = 0; j < elementList.length; j++) {
           var tempTarget = constructTarget(elementList[j], rawList[i])
           targetList.push(tempTarget);
         }
       }
-    };
+    }
+    mcEvents.addEventListener(window, "resize", updateTargetList);
 
     var constructTarget = function (element, targetInfo) {
-      var tempTarget = mcCss.getElementDimensions(element);
+      var tempTarget = mcCollisions.getElementDimensions(element);
 
-      mcCss.addClass(tempTarget.jqElement, 'droppable');
+      mcCss.addClass(tempTarget.element, 'droppable');
 
       tempTarget.onDrop  = targetInfo.onDrop;
       tempTarget.onHover = targetInfo.onHover;
@@ -41,12 +45,15 @@ angular.module('mc-drag-and-drop.mcDraggable', [
       return tempTarget;
     };
 
-    var getTargets = function () {
-      return targetList;
-    };
-
-    var setCurrentTarget = function (currentPosition, collisionType) {
-      currentTarget = mcCss.findOverlap(currentPosition, targetList, collisionType);
+    var setCurrentTarget = function (cursorPosition, elementPosition, elementDimensions, collisionType) {
+      var positionDetails;
+      if (collisionType !== 'cursor') {
+        positionDetails = mcCollisions.getTranslatedDimensions(elementDimensions, elementPosition);
+      }
+      else {
+        positionDetails = cursorPosition;
+      }
+      currentTarget = mcCollisions.findOverlap(positionDetails, targetList, collisionType);
     };
 
     var getCurrentTarget = function () {
@@ -73,12 +80,14 @@ angular.module('mc-drag-and-drop.mcDraggable', [
     };
 
     return {
-      getTargets:         getTargets,
+      setDropTargets:  setDropTargets,
+
       setCurrentTarget:   setCurrentTarget,
       getCurrentTarget:   getCurrentTarget,
+
       setPreviousTarget:  setPreviousTarget,
       getPreviousTarget:  getPreviousTarget,
-      updateDropTargets:  updateDropTargets,
+
       callDropEvent:      callDropEvent,
       callHoverEvent:     callHoverEvent
     }
@@ -87,18 +96,21 @@ angular.module('mc-drag-and-drop.mcDraggable', [
   return DropTargets;
 }])
 
-.directive('mcDraggable', ['mcAnimation', 'mcCss', 'mcEvents', 'DropTargets', function (mcAnimation, mcCss, mcEvents, DropTargets) {
+.directive('mcDraggable', ['mcAnimation', 'mcCss', 'mcCollisions', 'mcEvents', 'DropTargets', function (mcAnimation, mcCss, mcCollisions, mcEvents, DropTargets) {
   return {
     restrict: 'A',
     scope: {
       itemInfo: '=',
       targets: '=',
       returnedInfo: '=',
-      collisionDetection: '='
+      collisionDetection: '=',
+      confineTo: '='
     },
     link: function(scope, element, attrs) {
       var classesWhileAnimating    = ['being-dragged'];
       var classesWhileNotAnimating = ['return-animation'];
+      var defaultCollision = 'cursor';
+      var defaultBounds    = 'html';
 
       var emptyCoordinates = { x:0, y:0 };
 
@@ -107,26 +119,32 @@ angular.module('mc-drag-and-drop.mcDraggable', [
       var elementPosition      = emptyCoordinates;
 
       var body;
+      var vanillaElement;
       var elementDimensions;
       var collisionDetection;
+      var elementConfinedTo;
+      var translationBounds;
 
       var isCurrentlyMoving;
       var dragEvents;
       var targets;
 
       var setupDirective = function () {
-        mcCss.addClass(element, 'draggable');
-        body = $('body');
-        elementDimensions = mcCss.getElementDimensions(element);
-        // collisionDetection = scope.collisionDetection || 'cursor';
-        collisionDetection = 'cursor';
+        vanillaElement = element[0];
+        mcCss.addClass(vanillaElement, 'draggable');
+        body = mcCss.findByAttribute('body');
+
+        elementDimensions = mcCollisions.getElementDimensions(vanillaElement);
+        elementConfinedTo = scope.confineTo || defaultBounds;
+        translationBounds = mcCollisions.getElementDimensions(elementConfinedTo);
+
+        collisionDetection = scope.collisionDetection || defaultCollision;
 
         targets = new DropTargets();
-        targets.updateDropTargets(scope.targets);
-        mcEvents.addWindowResizeListener(targets.updateDropTargets);
+        targets.setDropTargets(scope.targets);
 
         dragEvents = mcEvents.getDragEvents();
-        mcEvents.addEventListener(element[0], dragEvents.start, startEventHandler);
+        mcEvents.addEventListener(vanillaElement, dragEvents.start, startEventHandler);
       };
 
       // EVENT HANDLERS
@@ -134,20 +152,26 @@ angular.module('mc-drag-and-drop.mcDraggable', [
       var startEventHandler = function (event) {
         isCurrentlyMoving = true;
 
+        elementDimensions = mcCollisions.getElementDimensions(element);
+        translationBounds = mcCollisions.getElementDimensions(elementConfinedTo);
+
         initialEventPosition = mcEvents.getEventCoordinates(event);
         cursorPosition       = mcEvents.getEventCoordinates(event);
 
         mcEvents.addEventListener(document, dragEvents.move, moveEventHandler);
         mcEvents.addEventListener(document, dragEvents.stop, stopEventHandler);
 
-        startAnimation();
+        mcAnimation.startAnimation(startAnimation, moveAnimation, endAnimation, continueAnimation);
       };
 
       var moveEventHandler = function (event) {
         cursorPosition = mcEvents.getEventCoordinates(event);
-        elementPosition = mcEvents.diffPositions(cursorPosition, initialEventPosition);
+        var unboundedPosition = mcEvents.diffPositions(cursorPosition, initialEventPosition);
+        elementPosition = unboundedPosition;
 
-        targets.setCurrentTarget(cursorPosition, collisionDetection);
+        targets.setCurrentTarget(cursorPosition, elementPosition, elementDimensions, collisionDetection);
+        var positionDetails;
+
         targets.callHoverEvent(scope.returnedInfo);
       };
 
@@ -167,32 +191,33 @@ angular.module('mc-drag-and-drop.mcDraggable', [
       // ANIMATIONS
 
       var startAnimation = function () {
-        mcCss.removeClasses(element, classesWhileNotAnimating);
-        mcCss.addClasses(element, classesWhileAnimating);
+        mcCss.removeClasses(vanillaElement, classesWhileNotAnimating);
+        mcCss.addClasses(vanillaElement, classesWhileAnimating);
         mcCss.addClass(body, 'no-select');
-        mcAnimation.requestFrame(animationLoop);
       };
 
-      var animationLoop = function () {
-        mcCss.translateElement(element, elementPosition);
+      var moveAnimation = function () {
+        mcCss.translateElement(vanillaElement, elementPosition);
 
         if (targets.getPreviousTarget()) {
-          mcCss.removeClass(targets.getPreviousTarget().jqElement, 'hover');
+          mcCss.removeClass(targets.getPreviousTarget().element, 'hover');
         }
         if (targets.getCurrentTarget()) {
-          mcCss.addClass(targets.getCurrentTarget().jqElement, 'hover');
+          mcCss.addClass(targets.getCurrentTarget().element, 'hover');
           targets.setPreviousTarget(targets.getCurrentTarget());
         }
-
-        isCurrentlyMoving ? mcAnimation.requestFrame(animationLoop) : endAnimation();
       };
 
       var endAnimation = function () {
         mcCss.removeClass(body, 'no-select');
-        mcCss.removeClasses(element, classesWhileAnimating);
-        mcCss.addClasses(element, classesWhileNotAnimating);
-        mcCss.removeTranslation(element);
+        mcCss.removeClasses(vanillaElement, classesWhileAnimating);
+        mcCss.addClasses(vanillaElement, classesWhileNotAnimating);
+        mcCss.removeTranslation(vanillaElement);
       };
+
+      var continueAnimation = function () {
+        return isCurrentlyMoving;
+      }
 
       setupDirective();
     }

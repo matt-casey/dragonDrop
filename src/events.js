@@ -33,9 +33,7 @@ angular.module('mc-drag-and-drop.mcEvents', [])
   };
 
   _public.addWindowResizeListener = function (callback) {
-    window.onresize = function (event) {
-      callback(event);
-    };
+    window.addEventListener("resize", callback);
   }
 
   return _public;
