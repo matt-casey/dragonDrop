@@ -1,3 +1,9 @@
 <div ng-controller="SortCtrl">
-  <div mc-sortable="item in items" hover-template="" sort-attribute="" ></div>
+  <button ng-click="things[0].name = 'JOE'">make joe</button>
+  <button ng-click="things.push({name:'JOEseph'})">add joe</button>
+  <div class="column">
+    <mc-sortable-container sort-by="'priority'" hover-template="sortTemplate">
+      <div mc-sortable="item in things">_{{item.name}}_</div>
+    </mc-sortable-container>
+  </div>
 </div>

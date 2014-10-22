@@ -74,6 +74,11 @@ angular.module('myApp').controller('MainCtrl', ['$scope', function($scope) {
           type: 'type-2',
           onDrop: doubleEl,
           onHover: consoleLogIt
+        },
+        {
+          type: 'type-1',
+          onDrop: deleteEl,
+          onHover: undefined
         }
       ]
     },

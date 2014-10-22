@@ -1,11 +1,12 @@
-<div mc-draggable confine-to="'html'" returned-info="singleElement.id" targets="singleElement.targets" collision-detection="singleElement.collisionType" style="border:solid; width: 250px; height: 50px; text-align: center;">
-  Not Repeated {{singleElement.collisionType}}
+<div mc-draggable confine-to="'html'" returned-info="singleElement.id" targets="singleElement.targets" collision-detection="singleElement.collisionType" style="border:solid; background: whitesmoke; width: 350px; height: 50px; text-align: left; position: relative">
+  Not Repeated; collision: {{singleElement.collisionType}}
   <br>
   <span ng-repeat="target in singleElement.targets">{{target.type}}, </span>
+  <div grabbable class="handle">handle</div>
 </div>
 
-<div ng-repeat="item in items" mc-draggable confine-to="'body'" returned-info="item.id" targets="item.targets" collision-detection="item.collisionType" style="border:solid; width: 200px; height: 50px; text-align: center;">
-  REPEATED {{item.name}} {{item.collisionType}}
+<div ng-repeat="item in items" mc-draggable confine-to="'body'" returned-info="item.id" targets="item.targets" collision-detection="item.collisionType" style="border:solid; background: whitesmoke; width: 250px; height: 50px; text-align: center;">
+  REPEATED; collision: {{item.collisionType}}
   <br>
   <span ng-repeat="target in item.targets">{{target.type}}, </span>
 </div>

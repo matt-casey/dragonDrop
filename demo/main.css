@@ -1,17 +1,4 @@
 /* jrg-drop */
-* {
-  box-sizing: border-box;
-}
-
-html, body {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-}
-
-.draggable {
-  cursor: pointer;
-}
 .draggable.being-dragged {
   position: absolute;
   z-index: 10;
@@ -23,6 +10,9 @@ html, body {
 .droppable.hover {
   background-color: red;
 }
+.grabbable {
+  cursor: pointer;
+}
 .no-select {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -31,9 +21,38 @@ html, body {
   -ms-user-select: none;
   user-select: none;
 }
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
 .silver {
   background: silver;
 }
 .gray {
   background: gray;
+}
+.sortableItem {
+  height: 40px;
+  border: solid;
+  width: 100%;
+}
+.column {
+  position: absolute;
+  background: silver;
+  width: 40%;
+  height: 100%;
+}
+.handle {
+  width: 100px;
+  height: 40px;
+  background: black;
+  color: white;
+  position: absolute;
+  bottom: 0;
+  right: 0;
 }

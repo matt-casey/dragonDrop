@@ -29,22 +29,28 @@ angular.module('mc-drag-and-drop.mcCss', [])
 
   _public.addClasses = function (element, classNames) {
     for (var i = classNames.length - 1; i >= 0; i--) {
-      _public.addClass(element, classNames[i])
+      _public.addClass(element, classNames[i]);
     };
   };
 
   _public.removeClasses = function (element, classNames) {
     for (var i = classNames.length - 1; i >= 0; i--) {
-      _public.removeClass(element, classNames[i])
+      _public.removeClass(element, classNames[i]);
     };
   };
 
-  _public.findByAttribute = function (attribute) {
-    return document.querySelector(attribute);
+  _public.setAttribute = function (element, attribute, value) {
+    element.setAttribute(attribute, value);
+  }
+
+  _public.findByAttribute = function (attribute, elementToSearch) {
+    var element = elementToSearch || document;
+    return element.querySelector(attribute);
   };
 
-  _public.findAllByAttribute = function (attribute) {
-    return document.querySelectorAll(attribute);
+  _public.findAllByAttribute = function (attribute, elementToSearch) {
+    var element = elementToSearch || document;
+    return element.querySelectorAll(attribute);
   };
 
   return _public;
