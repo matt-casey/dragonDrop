@@ -11,6 +11,10 @@ angular.module('mc-drag-and-drop.mcCss', [])
     element.style.transform = "translate3d( 0, 0, 0)";
   };
 
+  _public.setStyle = function (element, style, value) {
+    element.style[style] = value;
+  }
+
   _public.hasClass = function (element, className) {
     element.classList.contains(className);
   };
@@ -41,6 +45,10 @@ angular.module('mc-drag-and-drop.mcCss', [])
 
   _public.setAttribute = function (element, attribute, value) {
     element.setAttribute(attribute, value);
+  }
+
+  _public.hasAttribute = function (element, attribute) {
+    return element.hasAttribute(attribute);
   }
 
   _public.findByAttribute = function (attribute, elementToSearch) {

@@ -46,14 +46,7 @@ angular.module('mc-drag-and-drop.mcDraggable', [
       return tempTarget;
     };
 
-    var setCurrentTarget = function (cursorPosition, elementPosition, elementDimensions, collisionType) {
-      var positionDetails;
-      if (collisionType !== 'cursor') {
-        positionDetails = mcCollisions.getTranslatedDimensions(elementDimensions, elementPosition);
-      }
-      else {
-        positionDetails = cursorPosition;
-      }
+    var setCurrentTarget = function (positionDetails, collisionType) {
       currentTarget = mcCollisions.findOverlap(positionDetails, targetList, collisionType);
     };
 
@@ -69,14 +62,14 @@ angular.module('mc-drag-and-drop.mcDraggable', [
       return previousTarget;
     };
 
-    var callDropEvent = function (callArguments) {
-      currentTarget.onDrop && currentTarget.onDrop(callArguments);
+    var callDropEvent = function (callArguments, eventDetails) {
+      currentTarget.onDrop && currentTarget.onDrop(callArguments, eventDetails);
       $rootScope.$apply();
       currentTarget = false;
     };
 
-    var callHoverEvent = function (callArguments) {
-      currentTarget.onHover && currentTarget.onHover(callArguments);
+    var callHoverEvent = function (callArguments, eventDetails) {
+      currentTarget.onHover && currentTarget.onHover(callArguments, eventDetails);
       $rootScope.$apply();
     };
 
@@ -134,6 +127,7 @@ angular.module('mc-drag-and-drop.mcDraggable', [
         rootElement = element[0];
         grabbableElement = mcCss.findByAttribute('[grabbable]', rootElement) || rootElement;
 
+        mcCss.addClasses(rootElement, classesWhileNotAnimating);
         mcCss.addClass(rootElement,      'draggable');
         mcCss.addClass(grabbableElement, 'grabbable');
 
@@ -144,11 +138,27 @@ angular.module('mc-drag-and-drop.mcDraggable', [
         translationBounds = mcCollisions.getElementDimensions(elementConfinedTo);
 
         targets = new DropTargets();
-        targets.setTargetConfig(scope.targets);
+        scope.$watch(scope.targets.length, updateTargets);
 
         dragEvents = mcEvents.getDragEvents();
         mcEvents.addEventListener(grabbableElement, dragEvents.start, startEventHandler);
       };
+
+      var updateTargets = function () {
+        targets.setTargetConfig(scope.targets);
+      }
+
+      var getPositionDetails = function () {
+        var positionDetails;
+        if (collisionDetection !== 'cursor') {
+          positionDetails = mcCollisions.getTranslatedDimensions(elementDimensions, elementPosition);
+        }
+        else {
+          positionDetails = cursorPosition;
+        }
+        positionDetails.type = collisionDetection;
+        return positionDetails;
+      }
 
       // EVENT HANDLERS
 
@@ -172,14 +182,15 @@ angular.module('mc-drag-and-drop.mcDraggable', [
         var unboundedPosition = mcEvents.diffPositions(cursorPosition, initialEventPosition);
         elementPosition = mcCollisions.getBoundedPosition(unboundedPosition, elementDimensions, translationBounds);
 
-        targets.setCurrentTarget(cursorPosition, elementPosition, elementDimensions, collisionDetection);
-        var positionDetails;
+        var positionDetails = getPositionDetails();
+        targets.setCurrentTarget(positionDetails, collisionDetection);
 
-        targets.callHoverEvent(scope.returnedInfo);
+        targets.callHoverEvent(scope.returnedInfo, positionDetails);
       };
 
       var stopEventHandler = function (event) {
-        targets.callDropEvent(scope.returnedInfo);
+        var positionDetails = getPositionDetails();
+        targets.callDropEvent(scope.returnedInfo, positionDetails);
 
         isCurrentlyMoving    = false;
 

@@ -14,6 +14,18 @@ angular.module('myApp').controller('SortCtrl', ['$scope', function($scope) {
     console.log('asdf', id);
   };
 
+  var deleteEl = function (item) {
+    for (var i = 0; i < $scope.things.length; i++) {
+      if ($scope.things[i].id === item.id) {
+        $scope.things.splice(i, 1);
+      }
+    };
+  }
+
+  $scope.removeItem = function () {
+    $scope.things.pop();
+  };
+
   $scope.addJoe = function () {
     $scope.things.push({
       id: '0123',
@@ -22,18 +34,13 @@ angular.module('myApp').controller('SortCtrl', ['$scope', function($scope) {
       name: 'joey',
       targets: [
         {
-          type: 'column-1',
-          onDrop: sortEl,
-          onHover: sortEl
-        },
-        {
-          type: 'column-2',
-          onDrop: sortEl,
+          type: 'trash',
+          onDrop: deleteEl,
           onHover: sortEl
         }
       ]
     })
-  }
+  };
 
   $scope.thingsTwo = [];
 
@@ -45,13 +52,8 @@ angular.module('myApp').controller('SortCtrl', ['$scope', function($scope) {
       name: 'item-1',
       targets: [
         {
-          type: 'column-1',
-          onDrop: sortEl,
-          onHover: sortEl
-        },
-        {
-          type: 'column-2',
-          onDrop: sortEl,
+          type: 'trash',
+          onDrop: deleteEl,
           onHover: sortEl
         }
       ]
@@ -63,14 +65,9 @@ angular.module('myApp').controller('SortCtrl', ['$scope', function($scope) {
       name: 'item-2',
       targets: [
         {
-          type: 'column-1',
-          onDrop: sortEl,
+          type: 'trash',
+          onDrop: deleteEl,
           onHover: undefined
-        },
-        {
-          type: 'column-2',
-          onDrop: sortEl,
-          onHover: sortEl
         }
       ]
     },
@@ -81,14 +78,9 @@ angular.module('myApp').controller('SortCtrl', ['$scope', function($scope) {
       name: 'item-2',
       targets: [
         {
-          type: 'column-1',
-          onDrop: sortEl,
+          type: 'trash',
+          onDrop: deleteEl,
           onHover: undefined
-        },
-        {
-          type: 'column-2',
-          onDrop: sortEl,
-          onHover: sortEl
         }
       ]
     }
