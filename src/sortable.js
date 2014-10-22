@@ -169,7 +169,7 @@ angular.module('mc-drag-and-drop.mcSortable', ['mc-drag-and-drop.mcDraggable'])
                   return getChildProperty(children[i], 'priority');
                 }
               };
-              return 100000;
+              return rankings[rankings.length - 1].priority + 1;
             }
 
             var changePriorities = function (item, eventDetails) {

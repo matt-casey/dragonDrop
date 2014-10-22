@@ -4,6 +4,7 @@
 "authors": [
 "Matt Casey <mdc09321@gmail.com>"
 ],
+"main": ["dist/drop.min.js", "dist/drop.min.css"],
 "description": "Angular drag and drop and sort directive",
 "keywords": [
 "angular",
