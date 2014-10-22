@@ -29,7 +29,7 @@ angular.module('myApp').controller('SortCtrl', ['$scope', function($scope) {
   $scope.addJoe = function () {
     $scope.things.push({
       id: '0123',
-      priority: '0123',
+      priority: '1',
       collisionType: 'cursor',
       name: 'joey',
       targets: [
@@ -47,9 +47,9 @@ angular.module('myApp').controller('SortCtrl', ['$scope', function($scope) {
   $scope.things = [
     {
       id: '0123',
-      priority: '0123',
+      priority: 0,
       collisionType: 'cursor',
-      name: 'item-1',
+      name: 'item-A',
       targets: [
         {
           type: 'trash',
@@ -60,9 +60,9 @@ angular.module('myApp').controller('SortCtrl', ['$scope', function($scope) {
     },
     {
       id: '321',
-      priority: '321',
+      priority: 2,
       collisionType: 'partial',
-      name: 'item-2',
+      name: 'item-B',
       targets: [
         {
           type: 'trash',
@@ -73,9 +73,9 @@ angular.module('myApp').controller('SortCtrl', ['$scope', function($scope) {
     },
     {
       id: '3321',
-      priority: '3321',
+      priority: 3,
       collisionType: 'complete',
-      name: 'item-2',
+      name: 'item-C',
       targets: [
         {
           type: 'trash',

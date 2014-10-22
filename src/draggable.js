@@ -123,6 +123,7 @@ angular.module('mc-drag-and-drop.mcDraggable', [
 
       var setupDirective = function () {
         body = mcCss.findByAttribute('body');
+        if (scope.targets === undefined) { scope.targets = [] };
 
         rootElement = element[0];
         grabbableElement = mcCss.findByAttribute('[grabbable]', rootElement) || rootElement;
@@ -163,6 +164,7 @@ angular.module('mc-drag-and-drop.mcDraggable', [
       // EVENT HANDLERS
 
       var startEventHandler = function (event) {
+        event.preventDefault();
         isCurrentlyMoving = true;
 
         elementDimensions = mcCollisions.getElementDimensions(element);

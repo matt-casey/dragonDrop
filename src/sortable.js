@@ -27,7 +27,7 @@ angular.module('mc-drag-and-drop.mcSortable', ['mc-drag-and-drop.mcDraggable'])
             child.attr('collision-detection', "'center'");
             child.attr('priority', "'body'");
             child.attr('mc-draggable', '');
-            child.attr('ng-repeat', repeats);
+            child.attr('ng-repeat', repeats + "| orderBy:" + "'priority'");
           }
           else if (child.attr('mc-sortable-place-holder') !== undefined) {
             mcCss.setStyle(child[0], 'display', 'none');
@@ -67,7 +67,6 @@ angular.module('mc-drag-and-drop.mcSortable', ['mc-drag-and-drop.mcDraggable'])
                   tempChildren.push(child);
                 }
                 else{
-                  console.log('hoverTemplate?',child)
                 };
               };
 
@@ -110,31 +109,91 @@ angular.module('mc-drag-and-drop.mcSortable', ['mc-drag-and-drop.mcDraggable'])
             };
 
             var isAnimating = false;
+            var movingElement;
+            var movingEvent;
+            var cutoff;
 
             var startAnimation = function() {
-              console.log('START ANIM')
+              cutoff = currentlyOver(movingEvent);
+              moveChildren();
             };
             var moveAnimation = function () {
-              console.log('MOVE ANIM')
+              cutoff = currentlyOver(movingEvent);
+              moveChildren(cutoff);
             };
             var endAnimation = function () {
-              console.log('END ANIM')
+              for (var i = 0; i < children.length; i++) {
+                mcCss.removeTranslation(children[i]);
+              };
             };
             var continueAnimation = function () {
               return isAnimating;
             };
 
             var hoverEventHandler = function (item, eventDetails) {
+              movingEvent = eventDetails;
               if (!isAnimating) {
                 isAnimating = true;
+                movingElement = item;
                 mcAnimation.startAnimation(startAnimation, moveAnimation, endAnimation, continueAnimation);
+              };
+            }
+
+            var moveChildren = function (cutoff) {
+              for (var i = 0; i < children.length; i++) {
+                var current =getChildProperty(children[i], 'priority');
+                if (current !== movingElement.priority) {
+                  if (current >= cutoff) {
+                    mcCss.translateElement(children[i], {x: 0, y: movingEvent.height});
+                  }
+                  else if ((current < cutoff) && (current > movingElement.priority)) {
+                    mcCss.translateElement(children[i], {x: 0, y: (movingEvent.height)});
+                  }
+                  else{
+                    mcCss.removeTranslation(children[i]);
+                  }
+                }
+                else {
+                }
+              };
+            }
+
+            var currentPriority = function () {
+
+            }
+
+            var currentlyOver = function (eventDetails) {
+              for (var i = 0; i < children.length; i++) {
+                var childDimensions = children[i].dimensions;
+                if (mcCollisions.checkOverlap.center(eventDetails, childDimensions)) {
+                  return getChildProperty(children[i], 'priority');
+                }
+              };
+              return 100000;
+            }
+
+            var changePriorities = function (item, eventDetails) {
+              isAnimating = false;
+              if (cutoff !== movingElement.priority) {
+                for (var i = 0; i < children.length; i++) {
+                  var current = getChildProperty(children[i], 'priority');
+                  if (current === movingElement.priority) {
+                    setChildProperty(children[i], 'priority', cutoff)
+                  }
+                  else if (current >= cutoff) {
+                    setChildProperty(children[i], 'priority', (parseInt(current) + 1))
+                  }
+                  else if ((current < cutoff) && (current > movingElement.priority)) {
+                    setChildProperty(children[i], 'priority', (parseInt(current) - 1))
+                  }
+                };
               };
             }
 
             var makeSortableTarget = function (name) {
               return {
                 type: name,
-                onDrop:  function (item, eventDetails) { isAnimating = false },
+                onDrop:  function (item, eventDetails) { changePriorities(item, eventDetails) },
                 onHover: function (item, eventDetails) { hoverEventHandler(item, eventDetails) }
               }
             };
