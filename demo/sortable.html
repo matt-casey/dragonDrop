@@ -1,9 +1,14 @@
 <div ng-controller="SortCtrl">
   <button ng-click="things[0].name = 'JOE'">make joe</button>
-  <button ng-click="things.push({name:'JOEseph'})">add joe</button>
+  <button ng-click="addJoe()">add joe</button>
   <div class="column">
-    <mc-sortable-container sort-by="'priority'" hover-template="sortTemplate">
-      <div mc-sortable="item in things">_{{item.name}}_</div>
-    </mc-sortable-container>
+    <div mc-sortable-container="column-1" sort-by="'priority'" hover-template="sortTemplate" class="fillSpace">
+      <div mc-sortable-item="item in things" class="testSortItem">_{{item.name}}_</div>
+    </div>
+  </div>
+  <div class="column">
+    <div mc-sortable-container="column-2" sort-by="'priority'" hover-template="sortTemplate" class="fillSpace">
+      <div mc-sortable-item="item in thingsTwo" class="testSortItem">_{{item.name}}_</div>
+    </div>
   </div>
 </div>

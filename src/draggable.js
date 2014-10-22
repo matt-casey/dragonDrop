@@ -8,26 +8,26 @@ angular.module('mc-drag-and-drop.mcDraggable', [
 .factory('DropTargets', ['$rootScope', 'mcCss', 'mcCollisions', 'mcEvents', function ($rootScope, mcCss, mcCollisions, mcEvents) {
   var DropTargets = function () {
 
-    var targetList = [];
-    var rawList = [];
+    var targetList   = [];
+    var targetConfig = [];
     var currentTarget;
     var previousTarget;
 
 
-    var setDropTargets = function (newRawList) {
-      rawList = newRawList;
+    var setTargetConfig = function (newTargetConfig) {
+      targetConfig = newTargetConfig || [];
       updateTargetList();
     };
 
     var updateTargetList = function () {
       targetList = [];
 
-      for (var i = 0; i < rawList.length; i++) {
-        var attributeName = '[mc-droppable=' + rawList[i].type + ']';
+      for (var i = 0; i < targetConfig.length; i++) {
+        var attributeName = '[mc-droppable=' + targetConfig[i].type + ']';
         var elementList = mcCss.findAllByAttribute(attributeName);
 
         for (var j = 0; j < elementList.length; j++) {
-          var tempTarget = constructTarget(elementList[j], rawList[i])
+          var tempTarget = constructTarget(elementList[j], targetConfig[i])
           targetList.push(tempTarget);
         }
       }
@@ -41,6 +41,7 @@ angular.module('mc-drag-and-drop.mcDraggable', [
 
       tempTarget.onDrop  = targetInfo.onDrop;
       tempTarget.onHover = targetInfo.onHover;
+
 
       return tempTarget;
     };
@@ -80,7 +81,7 @@ angular.module('mc-drag-and-drop.mcDraggable', [
     };
 
     return {
-      setDropTargets:    setDropTargets,
+      setTargetConfig:    setTargetConfig,
 
       setCurrentTarget:  setCurrentTarget,
       getCurrentTarget:  getCurrentTarget,
@@ -100,7 +101,6 @@ angular.module('mc-drag-and-drop.mcDraggable', [
   return {
     restrict: 'A',
     scope: {
-      itemInfo:           '=',
       targets:            '=',
       returnedInfo:       '=',
       collisionDetection: '=',
@@ -144,7 +144,7 @@ angular.module('mc-drag-and-drop.mcDraggable', [
         translationBounds = mcCollisions.getElementDimensions(elementConfinedTo);
 
         targets = new DropTargets();
-        targets.setDropTargets(scope.targets);
+        targets.setTargetConfig(scope.targets);
 
         dragEvents = mcEvents.getDragEvents();
         mcEvents.addEventListener(grabbableElement, dragEvents.start, startEventHandler);

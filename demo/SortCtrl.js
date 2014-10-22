@@ -10,18 +10,87 @@ angular.module('myApp').controller('SortCtrl', ['$scope', function($scope) {
   $scope.sortTemplate = 'demo/hover.html';
   $scope.sampleItem   = 'demo/sampleItem.html';
 
+  var sortEl = function (id) {
+    console.log('asdf', id);
+  };
+
+  $scope.addJoe = function () {
+    $scope.things.push({
+      id: '0123',
+      priority: '0123',
+      collisionType: 'cursor',
+      name: 'joey',
+      targets: [
+        {
+          type: 'column-1',
+          onDrop: sortEl,
+          onHover: sortEl
+        },
+        {
+          type: 'column-2',
+          onDrop: sortEl,
+          onHover: sortEl
+        }
+      ]
+    })
+  }
+
+  $scope.thingsTwo = [];
+
   $scope.things = [
     {
-      priority: 1,
-      name: 'thing A'
+      id: '0123',
+      priority: '0123',
+      collisionType: 'cursor',
+      name: 'item-1',
+      targets: [
+        {
+          type: 'column-1',
+          onDrop: sortEl,
+          onHover: sortEl
+        },
+        {
+          type: 'column-2',
+          onDrop: sortEl,
+          onHover: sortEl
+        }
+      ]
     },
     {
-      priority: 3,
-      name: 'thing B'
+      id: '321',
+      priority: '321',
+      collisionType: 'partial',
+      name: 'item-2',
+      targets: [
+        {
+          type: 'column-1',
+          onDrop: sortEl,
+          onHover: undefined
+        },
+        {
+          type: 'column-2',
+          onDrop: sortEl,
+          onHover: sortEl
+        }
+      ]
     },
     {
-      priority: 5,
-      name: 'thing C'
+      id: '3321',
+      priority: '3321',
+      collisionType: 'complete',
+      name: 'item-2',
+      targets: [
+        {
+          type: 'column-1',
+          onDrop: sortEl,
+          onHover: undefined
+        },
+        {
+          type: 'column-2',
+          onDrop: sortEl,
+          onHover: sortEl
+        }
+      ]
     }
   ]
 
