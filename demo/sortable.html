@@ -1,0 +1,29 @@
+<div ng-controller="SortCtrl">
+  <button ng-click="things[0].name = 'JOE'">make joe</button>
+  <button ng-click="addJoe()">add joe</button>
+  <button ng-click="removeItem()">pop joe</button>
+
+
+  <div class="column">
+
+    <div mc-sortable-container="column-1" feed-to="'column-2'" sort-by="'priority'" class="fillSpace">
+      <div mc-sortable-item="item in things" class="testSortItem">_{{item.name}}_</div>
+      <div mc-sortable-place-holder ng-include="sortTemplate"></div>
+    </div>
+
+  </div>
+
+
+  <div class="column">
+
+    <div mc-sortable-container="column-2" sort-by="'priority'" class="fillSpace">
+      <div mc-sortable-item="item in thingsTwo" class="testSortItem">_{{item.name}}_</div>
+      <div mc-sortable-place-holder ng-include="sortTemplate"></div>
+    </div>
+
+  </div>
+
+  <div mc-droppable="trash" style="position:absolute; height: 100px; width: 100%; bottom: 0; left: 0; border: solid;">Trash</div>
+
+
+</div>

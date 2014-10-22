@@ -1,7 +1,4 @@
 /* jrg-drop */
-.draggable {
-  cursor: pointer;
-}
 .draggable.being-dragged {
   position: absolute;
   z-index: 10;
@@ -12,6 +9,9 @@
 }
 .droppable.hover {
   background-color: red;
+}
+.grabbable {
+  cursor: pointer;
 }
 .no-select {
   -webkit-touch-callout: none;

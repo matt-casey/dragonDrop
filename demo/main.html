@@ -1,0 +1,36 @@
+<div mc-draggable confine-to="'html'" returned-info="singleElement.id" targets="singleElement.targets" collision-detection="singleElement.collisionType" style="border:solid; background: whitesmoke; width: 350px; height: 50px; text-align: left; position: relative">
+  Not Repeated; collision: {{singleElement.collisionType}}
+  <br>
+  <span ng-repeat="target in singleElement.targets">{{target.type}}, </span>
+  <div grabbable class="handle">handle</div>
+</div>
+
+<div ng-repeat="item in items" mc-draggable confine-to="'body'" returned-info="item.id" targets="item.targets" collision-detection="item.collisionType" style="border:solid; background: whitesmoke; width: 250px; height: 50px; text-align: center;">
+  REPEATED; collision: {{item.collisionType}}
+  <br>
+  <span ng-repeat="target in item.targets">{{target.type}}, </span>
+</div>
+
+<div style="position: absolute; height: 300px; width: 100%; top: 60%; margin-top: -150px;">
+  <div mc-droppable="type-1" style="position: relative; width: 33%; float: left; height: 100%;" class="gray">
+    DROPPABLE (DELETE)
+    <br>
+    Type 1
+    <br>
+    {{list1}}
+  </div>
+  <div mc-droppable="type-2" style="position: relative; width: 33%; float: left; height: 100%;" class="silver">
+    DROPPABLE (Add To List)
+    <br>
+    Type 2
+    <br>
+    {{list2}}
+  </div>
+  <div mc-droppable="type-3" style="position: relative; width: 33%; float: left; height: 100%;" class="gray">
+    DROPPABLE (ALERT)
+    <br>
+    Type 3
+    <br>
+    {{list3}}
+  </div>
+</div>

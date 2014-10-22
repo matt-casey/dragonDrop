@@ -32,6 +32,7 @@ angular.module('myApp').controller('MainCtrl', ['$scope', function($scope) {
 
   $scope.singleElement = {
     id: '342',
+    collisionType: 'center',
     targets: [
       {
         type: 'type-2',
@@ -49,6 +50,7 @@ angular.module('myApp').controller('MainCtrl', ['$scope', function($scope) {
   $scope.items = [
     {
       id: '0123',
+      collisionType: 'cursor',
       name: 'item-1',
       targets: [
         {
@@ -65,6 +67,24 @@ angular.module('myApp').controller('MainCtrl', ['$scope', function($scope) {
     },
     {
       id: '321',
+      collisionType: 'partial',
+      name: 'item-2',
+      targets: [
+        {
+          type: 'type-2',
+          onDrop: doubleEl,
+          onHover: consoleLogIt
+        },
+        {
+          type: 'type-1',
+          onDrop: deleteEl,
+          onHover: undefined
+        }
+      ]
+    },
+    {
+      id: '3321',
+      collisionType: 'complete',
       name: 'item-2',
       targets: [
         {
